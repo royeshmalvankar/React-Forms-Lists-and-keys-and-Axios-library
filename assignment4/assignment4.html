@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template</title>
+  </head>
+  <style>
+    #card{
+      border-radius: 20px;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      transition: 0.3s;
+      padding: 10px;
+      margin: 10px;
+      background-color: #286451;
+      width: 300px;
+      height: 370px;
+      text-align: center;
+    }
+    #card button{
+      margin: 5px;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: #7eecc9;
+      color: white;
+      font-weight: bold;
+    }
+    #cont{
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+      width: 50%;
+      margin: auto;
+      padding: auto;
+    }
+    #form{
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+    #form button{
+      margin: 10px;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    #filter{
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+    #filter button{
+      margin: 10px;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    #formedit{
+      display: block;
+      text-align: center;
+      padding: 10px;
+    }
+    #formedit button{
+      margin: 10px;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    #formedit input{
+      margin: auto;
+      display: block;
+      border-radius: 10px;
+    }
+    #formedit input[type="checkbox"]{
+      display: inline;
+      
+    }
+  </style>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="text/babel">
+
+    // Your  code will go here
+    // capture the root element
+    let root = document.getElementById('root')
+    // created a DisplayTask component
+    let DisplayTask = ({data,i}) => {
+      // created states
+      const [flag,setflag] = React.useState(false)
+      const [formstate,setFormstate] = React.useState({
+        task:"",
+        status:false,
+        assigne:""
+      })
+      // created function to edit task
+      let editdata = (e) => {
+        let data=({
+          ...formstate,
+          [e.target.name]:e.target.name==="isCompleted"? e.target.checked : e.target.value
+        })
+        setFormstate(data)
+      }
+      // created function to delete task
+      let deleteTask = async(id) => {
+        let response = await axios.delete(`http://localhost:3000/todos/${id}`)
+      }
+      // created function to edit task
+      let editTask = async(id) => {
+        console.log("edit",id);
+        let response = await axios.put(`http://localhost:3000/todos/${id}`,{
+          ...formstate
+        })
+      }
+
+      return (
+        <>
+          <div id ="card">
+              <h1>Task: <i>{data.task}</i></h1>
+              <h1>{data.isCompleted?"Completed":"Not Completed"}</h1>
+              <h1>Assigne: <i>{data.assigne}</i></h1>
+              <button onClick={() => deleteTask(data.id)}>Delete</button>
+              <button onClick={() => setflag(!flag)} >Edit</button>
+              {flag?
+                <>
+                <div id="formedit">
+                  <input type="text" name="task" value={formstate.task} onChange={(e) => editdata(e)} placeholder="Enter Task" />
+                  <label >Is Completed: </label>
+                  <input type="checkbox" name="isCompleted" value={formstate.isCompleted} onChange={(e)=>editdata(e)} />
+                  <input type="text" name="assigne" value={formstate.assigne} onChange={(e)=>editdata(e)}  placeholder="Enter Assignee"/>
+                  <button onClick={() => editTask(data.id)}>Submit</button>
+                </div>
+                </>
+                :null
+              }
+          </div>
+        </>
+    )
+       
+ 
+    }
+    // created a App component
+    let App = () => {
+        // created states
+      const [task,setTask] = React.useState([])
+      const [filter,setFilter] = React.useState("")
+      const [flag,setflag] = React.useState(false)
+      const [formstate,setFormstate] = React.useState({
+        id:"",
+        task:"",
+        isCompleted:false,
+        assigne:""
+      })
+      // created function to add task
+      let submittask = (e) => {
+        let data ={
+          ...formstate,
+          [e.target.name]:e.target.name === 'isCompleted'? e.target.checked : e.target.value
+        }
+        setFormstate(data)
+      }
+      // created function to add task
+      let addTask = () => {
+        let resp = axios.post('http://localhost:3000/todos',{
+          ...formstate
+        })
+      }
+      // created function to get task
+      let getTask = async() => {
+        let response = await axios.get('http://localhost:3000/todos')
+        setTask(response.data);
+        setflag(false)
+      }
+
+      return (
+        <>
+        <h1 style={{textAlign:"center"}}>Task Manager</h1>
+        {/* form to add task */}
+        <div id="form">
+            <label > Task </label>
+            <input type="text" name="task" value={formstate.task} onChange={(e)=>submittask(e)} />
+            <label > Status </label>
+            <input type="checkbox" name="isCompleted" checked={formstate.isCompleted} onChange={(e)=>submittask(e)} />
+            <label > Assignee </label>
+            <input type="text" name="assigne" value={formstate.assigne} onChange={(e)=>submittask(e)} />
+            <button onClick={addTask}>Submit</button>
+        </div>
+        <div>
+          
+            <div id="filter">
+              {/* Button to get task */}
+              <button onClick={getTask}>Get Task</button>
+              {/* filter INCOMPLETE task */}
+              <button onClick={()=>setflag(true)}>Incomplete Task</button>
+              {/* filter task */}
+              <label >Filter Task: </label>
+              <input type="text" value={filter} onChange={(e)=>setFilter(e.target.value)} placeholder="Filter Assignee"/>
+            </div>
+            <div id="cont">
+              {/* map the tasks */}
+              {flag?task.map((data,i)=>{
+                console.log(data);
+                {/* filter the task based on status */}
+                if(data.isCompleted === false){
+                  return(
+                    <DisplayTask key={i} data={data} i={i} />
+                  )
+                }
+              }):task.map((data,i) => {
+                {/* filter the task based on assignee */}
+                if(flag === false && filter != ""){
+                if(data.assigne.toLowerCase().includes(filter.toLowerCase())){
+                  return(
+                    <DisplayTask key={i} data={data} i={i} />
+                  )
+                }}
+                else{
+                  return(
+                <DisplayTask key={i} data={data} i={i} />
+                )
+                }
+              }
+              )}
+            </div>
+        </div>
+        </>
+      )
+    }
+    // render the component
+    ReactDOM.createRoot(root).render(<App />)
+  </script>
+</html>

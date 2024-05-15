@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template</title>
+  </head>
+  <style>
+    #cont{
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+      width: 50%;
+      margin: auto;
+      padding: auto;
+    }
+    #card{
+      border-radius: 20px;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      transition: 0.3s;
+      padding: 10px;
+      margin: 10px;
+      background-color: #7eecc9;
+      width: 200px;
+      height: 200px;
+      text-align: center;
+    }
+    #form{
+      text-align: center;
+    }
+  </style>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    // Your  code will go here
+    // capture the root element
+    let root = document.getElementById('root')
+    // created a ToDoList component
+    let ToDoList = () => {
+          // created states
+          const [tasks, setTasks] = React.useState([])
+          const [formstate,setFormstate] = React.useState({
+            task:"",
+            status:false
+          })
+          // created function to add task
+          let addTask = (e) => {
+            let data=({
+              ...formstate,
+              [e.target.name]:e.target.value
+            })
+            setFormstate(data)
+          }
+          // created function to submit task
+          let submittask = (e) => {
+            setTasks([...tasks,formstate])
+          }
+          // created function to edit task
+          let editTask = (e,i) => {
+            let editdata = [...tasks]
+            console.log(editdata);
+            editdata[i].status = e.target.checked
+            setTasks(editdata)
+          }
+          // created function to delete task
+          let deletetask = (e,i) => {
+           let deletedata = tasks.filter((item,index)=>{
+              return index != i
+           })
+           setTasks(deletedata)
+          }
+
+          return (
+            <>
+            <h1 style={{textAlign:"center"}}>ToDo List</h1>
+            <div id="form">
+              {/* form to add task */}
+              <label>Add Task: </label>
+              <input type="text" name="task" value={formstate.task} onChange={addTask} placeholder="Enter Task"/>
+              <button onClick={submittask}>Add Task</button>
+            </div>
+            <div id="cont">
+              {/* map the tasks */}
+            {tasks.length>0?tasks.map((item,i)=>{
+              return (
+                
+                  <div id="card" key={i}>
+                    <h1 style={{color:"red",textDecoration:item.status?"line-through":"none"}} >Task: <i> {item.task} </i></h1>
+                    <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:"10px",marginBottom:"10px"}}>
+                      <label><h1>Status: </h1></label>
+                      <input style={{width:"20px",height:"20px"}} type="checkbox" name="check" checked={item.status} onChange={(e)=>editTask(e,i)}/>
+                    </div>
+                    <button onClick={(e)=>{deletetask(e,i)}}>Delete</button>   
+                  </div>
+                
+              )
+            }):null}
+          </div>
+            </>
+          )
+    }
+    // render the component
+    ReactDOM.createRoot(root).render(<ToDoList />)
+  </script>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template</title>
+  </head>
+  <style>
+    #root{
+      display: flex;
+      justify-content: center;
+    }
+    #root div{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #card{
+      border-radius: 20px;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      transition: 0.3s;
+      padding: 10px;
+      margin: 10px;
+      background-color: #7eecc9;
+      width: 400px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    // Your  code will go here
+    // capture the root element
+    let root = document.getElementById('root')
+    // created variable for the data
+    let data=[{greeting:"Happy Birthday",name:"John Doe"},{greeting:"Hello",name:"John"},{greeting:"Hi",name:"Mary"},{greeting:"Good Morning",name:"David"},{greeting:"Good Day",name:"Jane"}]
+
+    // created a greeting card component
+    let GreetingCard = ({greeting,name}) => {
+      return(
+        <>
+        <div id="card">
+          <h1 style={{color:"red"}} ><i>{greeting}, {name} !</i></h1>  
+        </div>
+        </>
+      )
+    }
+    // created an app component
+    let App = () => {
+      return(
+        <div>
+          {/* map over the data */}
+          {data.map((obj,i) => <GreetingCard greeting={obj.greeting} name={obj.name} key={i} />)}
+        </div>
+      )
+    }
+
+    // render the component
+    ReactDOM.createRoot(root).render(<App />)
+  </script>
+</html>
